@@ -20,15 +20,26 @@
     існування протягом оброблення запиту. Відповідно, для постійного
     збереження даних контролери не підходять.
 </p>
+<p>
+    Моделі (в ASP) - класи для передачі даних. Наявність моделей
+    створює певний інтерфейс обміну, який дуже легко перетворюється
+    у API. Моделі умовно поділяють на <br/>
+    моделі представлення (PageModel або ViewModel) [не плутати з MVVM] -
+    усі необхідні дані для формування представлення. <br />
+    моделі форми (FormModel) - дані, що передаються від представлення
+    до контролера. <br />
+    моделі збереження (Entity) - дані, що передаються на Модель 
+    (з великої літери - архітектурну частину проєкту)
+</p>
 <div class="row">
     <div class="col">
         <h3>RAM</h3>
-        <div class="alert alert-secondary" role="alert">
-            A simple secondary alert—check it out!
-        </div>
-        <div class="alert alert-secondary" role="alert">
-            A simple secondary alert—check it out!
-        </div>
+        @foreach(String str in (ViewData["data"] as List<String>))
+        {
+            <div class="alert alert-secondary" role="alert">
+                @str
+            </div>
+        }
     </div>
     <div class="col">
         <h3>File</h3>

@@ -1,4 +1,5 @@
-﻿using Azure_PV111.Models;
+﻿using Azure_PV111.Middleware;
+using Azure_PV111.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -20,11 +21,13 @@ namespace Azure_PV111.Controllers
 
         public IActionResult Privacy()
         {
+            DataMiddleware.Data.Add("Privacy visited");
             return View();
         }
 
         public ViewResult Data()
         {
+            ViewData["data"] = DataMiddleware.Data;
             return View();
         }
 
