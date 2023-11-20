@@ -1,0 +1,65 @@
+﻿@model Azure_PV111.Models.Home.ImageSearch.HomeImageSearchViewModel
+@{
+    ViewData["Title"] = "Seacrh";
+}
+<h1 class="display-4">Когнітивні сервіси на прикладі пошуку зображень</h1>
+
+<form class="row g-3">
+    <div class="col-auto mb-2">
+        Введіть що шукати:
+    </div>
+    <div class="col-auto">
+        <label for="inputSearch" class="visually-hidden">Фрагмент</label>
+        <input type="text"
+               class="form-control"
+               id="inputSearch"
+               name="search"
+               placeholder="Пошуковий рядок"
+               value="IT Step Academy">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary mb-3">Пошук</button>
+    </div>
+</form>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Search">Web pages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Images</a>
+                </li>
+             </ul>
+        </div>
+    </div>
+</nav>
+
+@if(Model.SearchResponse != null)
+{
+    <p>За запитом '@(Model.SearchResponse.queryContext.originalQuery)' 
+        знайдено @(Model.SearchResponse.totalEstimatedMatches) результатів
+    </p>
+    foreach(var value in Model.SearchResponse.value)
+    {
+        <img src="@(value.thumbnailUrl)" />
+    }
+}
+
+<p>
+    @Model.ErrorMessage
+</p>
+Д.З. Удосконалити сторінку пошуку зображень: 
+додати опис знайдених картинок,
+сайт їх походження 
+посилання на нього
+посилання на картинку з повним розміром
+
+Забезпечити пагінацію результатів пошуку
+
+Прикласти посилання на опублікований сайт

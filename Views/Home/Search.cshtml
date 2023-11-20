@@ -44,6 +44,23 @@
         <button type="submit" class="btn btn-secondary mb-3">Пошук</button>
     </div>
 </form>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Web pages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="ImageSearch">Images</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 @if(Model.WebSearchResponse != null)
 {
@@ -52,10 +69,23 @@
         знайдено @(Model.WebSearchResponse.webPages.totalEstimatedMatches)
         сторінок
     </p>
+    @for(int i = 1; i < 10; ++i)
+    {
+        if(i == Model.page)
+        {
+            <b>@i</b>
+        }
+        else
+        {
+            <a href="?page=@i&search=@(Model.WebSearchResponse.queryContext.originalQuery)">@i</a>
+        }        
+    }
+
+    int n = 1;    
     @foreach(var value in Model.WebSearchResponse.webPages.value)
     {
         <div class="mb-4">
-            <i>@value.displayUrl</i><br/>
+            <i>@(Model.offset + n++). @value.displayUrl</i><br />
             <a href="@(@value.url)">@value.name</a>
             <p class="text-muted">@value.snippet</p>            
         </div>
@@ -64,7 +94,3 @@
 <p>
     @Model.ErrorMessage
 </p>
- Д.З. Реалізувати відображення у результатах пошуку 
- відомостей про deepLinks - внутрішні посилання сайту
- Дотримуватись стилів відомих пошукових систем.
- Прикласти посилання на опублікований сайт
