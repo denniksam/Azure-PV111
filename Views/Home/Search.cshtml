@@ -1,0 +1,70 @@
+﻿@model Azure_PV111.Models.Home.Search.HomeSearchViewModel
+@{
+    ViewData["Title"] = "Seacrh";
+}
+<h1 class="display-4">Когнітивні сервіси на прикладі пошуку</h1>
+<p>
+    Робота з сервісом починається з додавання його у порталі.
+    Після вибору сервісу, даємо йому назву та вибираємо прайс-план.
+    Коли сервіс готовий, до нього додається приклад використання
+    (Sample Code) та документація (Tutorials).
+    Сервіси вимагають авторизації з передачею ключа з використанням
+    НТТР-заголовку "Ocp-Apim-Subscription-Key". Відомомсті про ключі
+    доступні у порталі на сторінці сервісу у розділі "Keys and endpoint"
+</p>
+<p>
+    Дані авторизації (ключі та ендпоїнти) слід захищати від публікації
+    на репозиторіях. Для цього створюється окремий конфігураційний файл,
+    який вилучається з репозиторію (додається до виключень .gitignore).
+    Також цей файл додається до конфігурації застосунку у program.cs
+</p>
+<p>
+    Кожен сервіс надає інформацію (відповіді) за власною структурою,
+    характерною саме для цього сервісу. Структура даних досить 
+    ієрархічна, класів ORM виходить велика кількість. Простіше за все
+    скористатись автоматичним ORM-парсером, наприклад, онлайн-конвертером.
+    Результати парсингу бажано зберігти під окремим простором імен
+    для запобігання конфліктів з іншими ORM з такою ж назвою.
+</p>
+
+<form class="row g-3">
+    <div class="col-auto mb-2">
+        Введіть що шукати:
+    </div>
+    <div class="col-auto">
+        <label for="inputSearch" class="visually-hidden">Фрагмент</label>
+        <input type="text" 
+               class="form-control" 
+               id="inputSearch" 
+               name="search"
+               placeholder="Пошуковий рядок"
+               value="IT Step Academy">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary mb-3">Пошук</button>
+    </div>
+</form>
+
+@if(Model.WebSearchResponse != null)
+{
+    <p>
+        За запитом @(Model.WebSearchResponse.queryContext.originalQuery)
+        знайдено @(Model.WebSearchResponse.webPages.totalEstimatedMatches)
+        сторінок
+    </p>
+    @foreach(var value in Model.WebSearchResponse.webPages.value)
+    {
+        <div class="mb-4">
+            <i>@value.displayUrl</i><br/>
+            <a href="@(@value.url)">@value.name</a>
+            <p class="text-muted">@value.snippet</p>            
+        </div>
+    }
+}
+<p>
+    @Model.ErrorMessage
+</p>
+ Д.З. Реалізувати відображення у результатах пошуку 
+ відомостей про deepLinks - внутрішні посилання сайту
+ Дотримуватись стилів відомих пошукових систем.
+ Прикласти посилання на опублікований сайт
