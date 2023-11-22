@@ -1,8 +1,9 @@
-﻿@model Azure_PV111.Models.Home.ImageSearch.HomeImageSearchViewModel
+﻿@using System.Text.Json.Nodes;
 @{
     ViewData["Title"] = "Seacrh";
+    JsonNode rootNode = ViewData["Search"] as JsonNode;
 }
-<h1 class="display-4">Когнітивні сервіси на прикладі пошуку зображень</h1>
+<h1 class="display-4">Когнітивні сервіси на прикладі пошуку новин</h1>
 
 <form class="row g-3">
     <div class="col-auto mb-2">
@@ -33,27 +34,27 @@
                     <a class="nav-link" asp-action="Search">Web pages</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Images</a>
+                    <a class="nav-link" asp-action="ImageSearch">Images</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="NewsSearch">News</a>
+                    <a class="nav-link active" href="#">News</a>
                 </li>
-             </ul>
+            </ul>
         </div>
     </div>
 </nav>
 
-@if(Model.SearchResponse != null)
+@if (rootNode != null)
 {
-    <p>За запитом '@(Model.SearchResponse.queryContext.originalQuery)' 
-        знайдено @(Model.SearchResponse.totalEstimatedMatches) результатів
-    </p>
-    foreach(var value in Model.SearchResponse.value)
+    <i>@(rootNode["queryContext"]["originalQuery"].GetValue<String>())</i>
+    <br/>
+    @foreach (var value in (rootNode["value"].AsArray()))
     {
-        <img src="@(value.thumbnailUrl)" />
+        <p>
+            @Html.Raw(value["name"].GetValue<String>())
+        </p>
     }
 }
-
-<p>
-    @Model.ErrorMessage
-</p>
+<br/>
+<br/>
+@ViewData["SearchResponse"]

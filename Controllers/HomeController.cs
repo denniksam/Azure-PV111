@@ -4,10 +4,13 @@ using Azure_PV111.Models.Home.ImageSearch;
 using Azure_PV111.Models.Home.ImageSearch.ImageOrm;
 using Azure_PV111.Models.Home.Search;
 using Azure_PV111.Models.Home.Search.WebOrm;
+using Azure_PV111.Models.Home.SpellCheck;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Azure_PV111.Controllers
 {
@@ -101,6 +104,76 @@ namespace Azure_PV111.Controllers
                     model.ErrorMessage = "Config load error";
                 }
             }
+            return View(model);
+        }
+
+        public ViewResult NewsSearch(String? search)
+        {
+            if (!String.IsNullOrEmpty(search))  // є пошуковий запит
+            {
+                String? endpoint = _configuration.GetSection("Search").GetSection("Endpoint").Value;
+                String? key = _configuration.GetSection("Search").GetSection("Key").Value;
+                String? location = _configuration.GetSection("Search").GetSection("Location").Value;
+                if (endpoint != null && key != null && location != null)
+                {
+                    endpoint += $"v7.0/news/search?textDecorations=true&textFormat=HTML&q=" + Uri.EscapeDataString(search);
+                    using HttpClient httpClient = new();
+                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
+                    String content = httpClient.GetStringAsync(endpoint).Result;
+
+                    ViewData["SearchResponse"] = content;
+                    ViewData["Search"] = JsonSerializer.Deserialize<JsonNode>(content);
+                    //  JsonSerializer.Deserialize<ImageSearchResponse>(content);
+                    // &textDecorations=true&textFormat=html
+                    // model.ErrorMessage = content;
+                }
+                else
+                {
+                    ViewData["SearchResponse"] = "Config load error";
+                }
+            }
+             return View();
+        }
+
+        public ViewResult SpellCheck(String? phrase)
+        {
+            HomeSpellCheckViewModel model = new();
+
+            if (!String.IsNullOrEmpty(phrase))
+            {
+                String? endpoint = _configuration.GetSection("Search").GetSection("Endpoint").Value;
+                String? key = _configuration.GetSection("Search").GetSection("Key").Value;
+                String? location = _configuration.GetSection("Search").GetSection("Location").Value;
+                if (endpoint != null && key != null && location != null)
+                {
+                    endpoint += $"v7.0/spellcheck?mkt=en-us&mode=proof";
+                    using HttpClient httpClient = new();
+                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
+                    var postContent = new StringContent(
+                        $"text={phrase}", 
+                        System.Text.Encoding.UTF8, 
+                        "application/x-www-form-urlencoded");
+
+                    String content = 
+                        httpClient
+                        .PostAsync(endpoint, postContent)
+                        .Result
+                        .Content
+                        .ReadAsStringAsync()
+                        .Result;
+
+                    model.SpellCheckResponse =
+                        JsonSerializer
+                        .Deserialize<SpellCheckResponse>(content);
+
+                    model.ErrorMessage = content;
+                }
+                else
+                {
+                    model.ErrorMessage = "Config error";
+                }
+            }
+
             return View(model);
         }
 

@@ -1,0 +1,46 @@
+﻿@model Azure_PV111.Models.Home.SpellCheck.HomeSpellCheckViewModel
+@{
+    ViewData["Title"] = "Spell";
+}
+<h1 class="display-4">Когнітивні сервіси на прикладі правопису</h1>
+
+<form class="row">
+    <div class="mb-3">
+        <label 
+            for="exampleFormControlTextarea1"                
+            class="form-label">Введіть текст</label>
+        <textarea 
+            name="phrase"
+            class="form-control" 
+            id="exampleFormControlTextarea1"
+            rows="3">Hello, show me the doney</textarea>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary mb-3">Перевірка</button>
+    </div>
+</form>
+
+@if(Model.SpellCheckResponse != null)
+{
+    foreach(var token in Model.SpellCheckResponse.flaggedTokens)
+    {
+        <p>
+            Помилка: <b>@(token.token)</b>
+            Пропозиції: <b>@(String.Join(',', token.suggestions.Select(s => s.suggestion)))</b>
+        </p>
+    }
+}
+
+<p>
+@Model.ErrorMessage
+</p>
+Д.З. Spell Check:
+Доповнити сторінку перевірки правопису
+- виводити всі помилки та всі пропозиції до них
+- біля помилок вивести позицію помилки (offset)
+- біля пропозиції зазначити її імовірність (округлити до 2 знаків)
+- сортувати пропозиції від найбільш імовірних до менш
+* додати кнопку "виправити", яка замінить помилку на найбільш
+  імовірну пропозицію
+** додати активність на кожну пропозицію, натиснення на неї
+   призведе до заміни у початковому тексті
