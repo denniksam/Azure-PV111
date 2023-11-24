@@ -36,6 +36,18 @@ namespace Azure_PV111.Controllers
             return View();
         }
 
+        public ViewResult Translator()
+        {
+            using HttpClient client = new();
+            ViewData["langs"] =
+                JsonSerializer.Deserialize<JsonNode>(
+                    client
+                    .GetStringAsync("https://api.cognitive.microsofttranslator.com/languages?api-version=3.0")
+                    .Result
+                );
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             DataMiddleware.Data.Add("Privacy visited");

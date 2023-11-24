@@ -1,0 +1,42 @@
+﻿@using System.Text.Json.Nodes;
+@{
+    ViewData["Title"] = "Translator";
+    JsonNode langs = ViewData["langs"] as JsonNode;
+}
+<h1 class="display-4">Когнітивні сервіси на прикладі перекладача</h1>
+
+<div class="row">
+    <div class="col-5">
+        <select class="form-select" id="translator-lang-from">
+            <option selected value="uk">Ukrainian</option>
+            @foreach (var item in langs.AsObject()["translations"].AsObject().AsEnumerable())
+            {
+                <option value="@(item.Key)">@(item.Value.AsObject()["name"].GetValue<String>())</option>
+            }
+            
+        </select>
+        <div class="mb-3">
+            <textarea class="form-control" rows="3" id="translator-input">Привіт, світ</textarea>
+        </div>
+    </div>
+    <div class="col-1">
+        <button class="btn btn-outline-secondary" id="translator-switch"><i class="bi bi-arrow-left-right"></i></button>
+        <br/>
+        <br/>
+        <button class="btn btn-outline-success" id="translator-translate"><i class="bi bi-arrows-fullscreen"></i></button>
+    </div>
+    <div class="col-5">
+        <select class="form-select" id="translator-lang-to">
+            <option value="uk">Ukrainian</option>
+            <option selected value="en">English</option>
+        </select>
+        <div class="mb-3">
+            <textarea class="form-control" rows="3" id="translator-output" disabled></textarea>
+        </div>
+    </div>
+</div>
+Д.З. Перекладач
+Реалізувати роботу кнопки переставляння мов (From <-> To)
+* Не просто переставити тексти, а зробити новий переклад
+(те, що у поточному перекладі підставляється як є у вихідний текст,
+а переклад запитується новий.)
