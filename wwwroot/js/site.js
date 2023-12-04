@@ -8,7 +8,34 @@
     if (translateButton) {
         document.addEventListener("selectionchange", onSelectionChange);
     }
+
+    const addProducerButton = document.getElementById("db-add-producer");
+    if (addProducerButton) addProducerButton.addEventListener('click', addProducerClick);
+    loadProducers();
 });
+function loadProducers() {
+    const container = document.getElementById("db-producers-container");
+    if (!container) return;
+    fetch("/api/db?type=Producer")
+        .then(r => r.json())
+        .then(j => {
+            console.log(j);
+//container.innerText = j
+        } );
+}
+function addProducerClick() {
+    const nameInput = document.querySelector("input[name='db-producer']");
+    if (!nameInput) throw "input[name='db-producer'] Not found";
+    fetch("/api/db", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: nameInput.value })
+    }).then(r => r.text())
+        .then(console.log);
+}
+
 
 var lastSelectionTimestamp = 0;
 var delayedAction;

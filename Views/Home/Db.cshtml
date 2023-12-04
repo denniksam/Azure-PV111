@@ -28,8 +28,12 @@
     За основу береться JSON як структура з довільним вкладенням.
 
 </p>
-<b>@ViewData["code"]</b>
-Д.З. Створити форму введення даних: телефон та ім'я
-"Замовити дзвінок". При надсиланні форми до БД (CosmosDb)
-має додатись інформація про замовлення. Додати скріншот
-з вибіркою з БД
+<div class="row">
+    <div class="col">
+        <div id="db-producers-container"></div>
+        Додати виробника
+        <input name="db-producer"/>
+        <button class="btn btn-outline-info" id="db-add-producer">+</button>
+    </div>
+    <div class="col"></div>
+</div>

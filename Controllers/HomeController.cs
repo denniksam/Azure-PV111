@@ -39,36 +39,7 @@ namespace Azure_PV111.Controllers
 
         public async Task<ViewResult> DbAsync()
         {
-            String? endpoint = _configuration.GetSection("CosmosDb").GetSection("Endpoint").Value;
-            String? key = _configuration.GetSection("CosmosDb").GetSection("Key").Value;
-            String? databaseId  = _configuration.GetSection("CosmosDb").GetSection("DatabaseId").Value;
-            String? containerId = _configuration.GetSection("CosmosDb").GetSection("ContainerId").Value;
             
-            CosmosClient cosmosClient = new(
-                endpoint, key, 
-                new CosmosClientOptions() { 
-                    ApplicationName = "Azure_PV111"
-                });
-            Database database = await cosmosClient
-                .CreateDatabaseIfNotExistsAsync(databaseId);
-            Container container = await database
-                .CreateContainerIfNotExistsAsync(containerId, "/partitionKey");
-            
-            int rnd = new Random().Next(100);
-            
-            Models.Home.Db.Test data = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                PartitionKey = rnd.ToString(),
-                Data = $"Random {rnd}"
-            };
-            ItemResponse<Models.Home.Db.Test> response = 
-                await container.CreateItemAsync<Models.Home.Db.Test>(
-                    data, 
-                    new PartitionKey(data.PartitionKey)
-                );
-
-            ViewData["code"] = response.StatusCode;
 
             return View();
         }
