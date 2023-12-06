@@ -90,9 +90,28 @@ namespace Azure_PV111.Controllers
             return res;
         }
 
+        [HttpDelete]
+        public async Task<object> DeleteProducer(String producerId)
+        {
+            Container dbContainer = await GetDbContainer();
+            ItemResponse<ProducerDataModel> response = await
+                dbContainer.DeleteItemAsync<ProducerDataModel>(
+                    producerId,
+                    new PartitionKey(ProducerDataModel.DataType)
+                );
+            return new { status = response.StatusCode };
+        }
+
+        [HttpPut]
+        public async Task<object> UpdateProducer(String producerId, String newName)
+        {
+            return new { producerId, newName };
+        }
 
     }
 }
-/* Д.З. Реалізувати відображення даних з контейнера CosmosDb
- * з типом "Producer" у вигляді HTML таблиці (№  Ім'я)
+/* Д.З. Реалізувати оновлення даних у контейнері CosmosDb
+ * з типом "Producer" за запитом PUT на контролер.
+ * При успішній відповіді вносити зміни у таблицю (без
+ * перезавантаження сторінки)
  */

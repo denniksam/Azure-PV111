@@ -19,9 +19,92 @@ function loadProducers() {
     fetch("/api/db?type=Producer")
         .then(r => r.json())
         .then(j => {
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+            for (let item of j) {
+                let tr = document.createElement('tr');
+                tr.setAttribute('producer-id', item.id);
+
+                let td = document.createElement('td');
+                td.setAttribute('data-name', '');
+                let tn = document.createTextNode(item.name);
+                td.appendChild(tn);
+                tr.appendChild(td);
+
+                // delete button
+                td = document.createElement('td');
+                let btn = document.createElement('button');
+                btn.classList.add('btn', 'btn-danger');
+                // <i class="bi bi-trash-fill"></i>
+                let i = document.createElement('i');
+                i.classList.add('bi', 'bi-trash-fill');
+                btn.appendChild(i);
+                btn.addEventListener('click', deleteProducerClick);
+                td.appendChild(btn);
+                tr.appendChild(td);
+
+                // edit button
+                td = document.createElement('td');
+                btn = document.createElement('button');
+                btn.classList.add('btn', 'btn-warning');
+                // <i class="bi bi-pen-fill"></i>
+                i = document.createElement('i');
+                i.classList.add('bi', 'bi-pen-fill');
+                btn.appendChild(i);
+                btn.addEventListener('click', editProducerClick);
+                td.appendChild(btn);
+                tr.appendChild(td);
+
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+            table.className = "table";
+            container.innerHTML = "";
+            container.appendChild(table);
             console.log(j);
 //container.innerText = j
         } );
+}
+function findProducerData(e) {
+const idCarrier = e.target.closest('[producer-id]');
+    if (!idCarrier) throw "[producer-id] not found";
+    const producerId = idCarrier.getAttribute('producer-id');
+    const nameCarrier = idCarrier.querySelector('[data-name]');
+    return { producerId, nameCarrier, idCarrier };
+}
+function editProducerClick(e) {
+    const { producerId, nameCarrier, idCarrier } = findProducerData(e);
+    const newName = prompt("Введіть нову назву", nameCarrier.innerText);
+    if (newName != nameCarrier.innerText
+        && newName !== ""
+        && newName !== null
+    ) {
+        fetch(`/api/db?producerId=${producerId}&newName=${newName}`, {
+            method: 'PUT'
+        })
+            .then(r => r.text())
+            .then(console.log);
+    }
+    else {
+        alert("Зміни скасовані");
+    }
+}
+function deleteProducerClick(e) {
+    const { producerId, nameCarrier, idCarrier } = findProducerData(e);
+    if (confirm("Підтверджуєте видалення " + nameCarrier.innerText)) {
+        console.log("To delete " + producerId);
+        fetch(`/api/db?producerId=${producerId}`, {
+            method: "DELETE"
+        }).then(r => r.json()).then(j => {
+            if (j.status == 204) {  // success
+                idCarrier.remove();
+            }
+            else {
+                alert("Щось пішло не так...");
+            }
+        });
+
+    }
 }
 function addProducerClick() {
     const nameInput = document.querySelector("input[name='db-producer']");
@@ -33,7 +116,7 @@ function addProducerClick() {
         },
         body: JSON.stringify({ name: nameInput.value })
     }).then(r => r.text())
-        .then(console.log);
+        .then(_ => location.reload());
 }
 
 
