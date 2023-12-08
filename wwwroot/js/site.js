@@ -12,7 +12,45 @@
     const addProducerButton = document.getElementById("db-add-producer");
     if (addProducerButton) addProducerButton.addEventListener('click', addProducerClick);
     loadProducers();
+
+    const linkButton = document.getElementById("db-button-link");
+    if (linkButton) linkButton.addEventListener('click', linkButtonClick);
+
+    const addProductButton = document.getElementById("db-add-product");
+    if (addProductButton) addProductButton.addEventListener('click', addProductClick);
+
 });
+function addProductClick() {
+    const productsContainer = document.getElementById("db-product-container");
+    if (!productsContainer) throw "#db-product-container not found";
+    const producerId = productsContainer.getAttribute('data-producer-id');
+    if (!producerId) {
+        alert("Виберіть виробника");
+        return;
+    }
+    console.log(producerId);
+    const nameInput = document.querySelector('[name="db-product-name"]');
+    if (!nameInput) throw "db-product-name not found";
+    const yearInput = document.querySelector('[name="db-product-year"]');
+    if (!yearInput) throw "db-product-year not found";
+    fetch('/api/db', {
+        method: 'ADD',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            producerId: producerId,
+            name: nameInput.value,
+            year: yearInput.value
+        })
+    }).then(r => r.text())
+        .then(console.log);
+}
+function linkButtonClick() {
+    fetch('/api/db', { method: 'LINK' })
+        .then(r => r.text())
+        .then(console.log);
+}
 function loadProducers() {
     const container = document.getElementById("db-producers-container");
     if (!container) return;
@@ -22,12 +60,22 @@ function loadProducers() {
             const table = document.createElement('table');
             const tbody = document.createElement('tbody');
             for (let item of j) {
-                let tr = document.createElement('tr');
+                let tr, td, tn;
+                tr = document.createElement('tr');
                 tr.setAttribute('producer-id', item.id);
 
-                let td = document.createElement('td');
+                // radio button
+                td = document.createElement('td');
+                let rb = document.createElement('input');
+                rb.setAttribute('type', 'radio');
+                rb.setAttribute('name', 'rb-producer');
+                rb.setAttribute('value', item.id);
+                rb.addEventListener('change', rbProducerChanged);
+                tr.appendChild(rb);
+
+                td = document.createElement('td');
                 td.setAttribute('data-name', '');
-                let tn = document.createTextNode(item.name);
+                tn = document.createTextNode(item.name);
                 td.appendChild(tn);
                 tr.appendChild(td);
 
@@ -65,6 +113,14 @@ function loadProducers() {
 //container.innerText = j
         } );
 }
+function rbProducerChanged(e) {
+    loadProducts(e.target.value);
+}
+function loadProducts(producerId) {
+    const productsContainer = document.getElementById("db-product-container");
+    if (!productsContainer) throw "#db-product-container not found";
+    productsContainer.setAttribute('data-producer-id', producerId);
+}
 function findProducerData(e) {
 const idCarrier = e.target.closest('[producer-id]');
     if (!idCarrier) throw "[producer-id] not found";
@@ -82,8 +138,16 @@ function editProducerClick(e) {
         fetch(`/api/db?producerId=${producerId}&newName=${newName}`, {
             method: 'PUT'
         })
-            .then(r => r.text())
-            .then(console.log);
+            .then(r => r.json())
+            .then(j => {
+                console.log(j);
+                if (j.status == 200) {
+                    nameCarrier.innerText = newName;
+                }
+                else {
+                    alert("Помилка при внесені змін");
+                }
+            });
     }
     else {
         alert("Зміни скасовані");
