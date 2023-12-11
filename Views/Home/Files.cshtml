@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Files";
+    String[] files = (String[])(ViewData["files"] ?? new String[0]);
+}
+
+<h1 class="display-4">Робота з файлами</h1>
+
+<i>
+    @ViewData["dir-exists"]
+</i>
+<br/>
+@foreach(String filename in files)
+{
+    <p>
+        <a asp-action="FileDownloader" asp-route-filename="@filename">
+            <i class="bi bi-download"></i>
+        </a>
+        @filename
+        <a asp-action="FileDeleter" asp-route-filename="@filename"
+           class="btn btn-outline-danger"
+           onclick="return confirm('Підтверджуєте?')">
+            <i class="bi bi-trash3"></i>
+        </a>
+    </p>
+}
+<form method="post" enctype="multipart/form-data" asp-action="FileUploader">
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Додайте файл для завантаження</label>
+        <div class="row">
+            <div class="col col-4">
+                <input name="uploaded" class="form-control" type="file" id="formFile">
+            </div>
+            <div class="col col-1">
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-upload"></i></button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (ViewData["file-message"] != null)
+{
+    <script>
+        alert("@Html.Raw(ViewData["file-message"])");
+    </script>
+}
+Д.З. Реалізувати "переглядач" текстових файлів.
+При натисканні на відповідну кнопку для текстового файлу
+виводиться сторінка з його змістом. + кнопка завантаження

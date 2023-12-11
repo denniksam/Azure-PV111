@@ -37,6 +37,129 @@ namespace Azure_PV111.Controllers
             return View();
         }
 
+        private static String FilesPath => 
+            (System.IO.Directory.Exists(@"C:\home\site\"))
+                ? @"C:\home\site\Files\"
+                : "./Files/";
+
+        public ViewResult Files()
+        {
+            String filename;
+            if (System.IO.Directory.Exists(@"C:\home\site\"))
+            {
+                filename = @"C:\home\site\";
+            }
+            else
+            {
+                filename = "./";
+            }
+
+            filename += "Files/";
+            if (System.IO.Directory.Exists(filename))
+            {
+                ViewData["dir-exists"] = "Exists";
+            }
+            else
+            {
+                ViewData["dir-exists"] = "Not Exists ";
+                try
+                {
+                    System.IO.Directory.CreateDirectory(filename);
+                    ViewData["dir-exists"] += "Created";
+                }
+                catch(Exception ex)
+                {
+                    ViewData["dir-exists"] += ex.Message;
+                }
+            }
+
+            String[] files = System.IO.Directory.GetFiles(filename);
+            for (int i = 0; i < files.Length; i += 1)
+            {
+                files[i] = Path.GetFileName(files[i]);
+            }
+            ViewData["files"] = files;
+
+            // Перевіряємо наявність повідомлення
+            if (HttpContext.Session.Keys.Contains("file-message"))
+            {
+                ViewData["file-message"] = 
+                    HttpContext.Session.GetString("file-message");
+
+                HttpContext.Session.Remove("file-message");
+            }
+            /*
+            filename += "file.txt";
+
+            if (System.IO.File.Exists(filename))
+            {
+                ViewData["exists"] = "Exists. " +
+                   System.IO.File.ReadAllText(filename) ;
+            }
+            else
+            {
+                ViewData["exists"] = "Not Exists. ";
+                try
+                {
+                    System.IO.File.WriteAllText(filename, "Test Line 2");
+                    ViewData["exists"] += "Created";
+                }
+                catch(Exception ex)
+                {
+                    ViewData["exists"] += ex.Message;
+                }
+            }
+            */
+            return View();
+        }
+        public IActionResult FileDeleter(String filename)
+        {
+            String file = FilesPath + filename;
+
+            if (System.IO.File.Exists(file))
+            {
+                System.IO.File.Delete(file);
+                HttpContext.Session.SetString("file-message", "Видалено успішно");
+                return RedirectToAction(nameof(Files));
+            }
+            return NotFound();
+        }
+
+        public IActionResult FileDownloader(String filename)
+        {
+            String file = FilesPath + filename;
+
+            if (System.IO.File.Exists(file))
+            {
+                return File(
+                    System.IO.File.ReadAllBytes(file),
+                    System.Net.Mime.MediaTypeNames.Application.Octet,
+                    filename
+                );
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public RedirectToActionResult FileUploader(IFormFile uploaded)
+        {
+            if(uploaded != null && uploaded.Length > 0)
+            {                
+                using Stream stream = 
+                    System.IO.File.OpenWrite(
+                        FilesPath + uploaded.FileName);
+
+                uploaded.CopyTo(stream);
+                HttpContext.Session.SetString("file-message", "Завантажено успішно");            
+            }
+            else
+            {
+                HttpContext.Session.SetString("file-message", "Помилка завантаження");
+
+            }
+            return RedirectToAction(nameof(Files));
+        }
+
         public async Task<ViewResult> DbAsync()
         {
             
