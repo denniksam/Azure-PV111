@@ -37,6 +37,12 @@ namespace Azure_PV111.Controllers
             return View();
         }
 
+        public ViewResult Maps()
+        {
+            return View();
+        }
+
+
         private static String FilesPath => 
             (System.IO.Directory.Exists(@"C:\home\site\"))
                 ? @"C:\home\site\Files\"
