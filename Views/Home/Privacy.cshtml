@@ -1,6 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
+    List<DateTime> dates = ViewData["dates"] as List<DateTime> ?? new();
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+<h4>Ви відвідували цю сторінку в наступні моменти</h4>
+@foreach (DateTime date in dates)
+{
+    <p>
+        @date
+    </p>
+}

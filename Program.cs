@@ -1,3 +1,4 @@
+using Azure_PV111.Cron;
 using Azure_PV111.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,5 +39,16 @@ app.UseMiddleware<DataMiddleware>();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+CronTask.Add(
+    action: () => Console.WriteLine("CronTask 5"), 
+    seconds: 5
+);
+CronTask.Add(() => Console.WriteLine("CronTask 3"), 3);
+CronTask.Add(
+    action: DataMiddleware.RemoveExpired,
+    seconds: DataMiddleware.LifeTime
+);
+CronTask.Start();
 
 app.Run();

@@ -187,7 +187,28 @@ namespace Azure_PV111.Controllers
 
         public IActionResult Privacy()
         {
-            DataMiddleware.Data.Add("Privacy visited");
+            DataMiddleware.Add("Privacy visited");
+            String filename = "./privacy.txt";
+            if(System.IO.File.Exists(filename))
+            {
+                System.IO.File.AppendAllText(
+                    filename,
+                    $"\n{DateTime.Now}"
+                );
+            }
+            else
+            {
+                System.IO.File.WriteAllText(
+                    filename,
+                    $"{DateTime.Now}"
+                );
+            }
+            List<DateTime> dates = new();
+            foreach(String line in System.IO.File.ReadAllLines(filename))
+            {
+                dates.Add(DateTime.Parse(line));
+            }
+            ViewData["dates"] = dates;
             return View();
         }
         
@@ -328,7 +349,7 @@ namespace Azure_PV111.Controllers
 
         public ViewResult Data()
         {
-            ViewData["data"] = DataMiddleware.Data;
+            ViewData["data"] = DataMiddleware.GetData();
             return View();
         }
 
